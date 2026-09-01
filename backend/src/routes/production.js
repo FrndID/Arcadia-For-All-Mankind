@@ -1,8 +1,11 @@
-import express from 'express';
+// backend/src/routes/production.js
+const express = require('express');
 const router = express.Router();
 
-router.post('/', (req, res) => {
-  res.json({ message: 'Production endpoint (belum selesai)' });
+// POST /api/production/create
+router.post('/create', async (req, res) => {
+  // payload: { agency_id, vehicle_type, blueprint }
+  res.json({ message: 'production create - stub' });
 });
 
-export default router;
+module.exports = router;

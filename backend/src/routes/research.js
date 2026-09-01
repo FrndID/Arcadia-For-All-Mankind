@@ -1,8 +1,15 @@
-import express from 'express';
+// backend/src/routes/research.js
+const express = require('express');
 const router = express.Router();
 
-router.post('/', (req, res) => {
-  res.json({ message: 'Research endpoint (belum selesai)' });
+// POST /api/research/start
+router.post('/start', async (req, res) => {
+  // payload: { agency_id, tech_id }
+  res.json({ message: 'research start - stub' });
 });
 
-export default router;
+router.get('/tree', async (req, res) => {
+  res.json({ message: 'technology tree - stub' });
+});
+
+module.exports = router;
