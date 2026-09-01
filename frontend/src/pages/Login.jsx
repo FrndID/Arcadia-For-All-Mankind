@@ -1,13 +1,21 @@
-// frontend/src/pages/Login.jsx
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const { signIn } = useAuth()
+  const navigate = useNavigate()
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
-    alert('MVP: Use Supabase Auth directly or implement backend login.')
+    try {
+      await signIn(email, password)
+      navigate('/')
+    } catch (err) {
+      alert('Login failed: ' + (err.message || err.error_description || JSON.stringify(err)))
+    }
   }
 
   return (

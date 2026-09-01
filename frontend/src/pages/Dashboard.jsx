@@ -1,14 +1,40 @@
-// frontend/src/pages/Dashboard.jsx
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import StatsCard from '../components/StatsCard'
+import useAuth from '../hooks/useAuth'
+import { supabase } from '../lib/supabaseClient'
 
 export default function Dashboard() {
-  // placeholder data - frontend will fetch from API
-  const stats = { rp: 0, si: 70, ipi: 60, slr: '0%' , ap: 25, budget: 50 }
+  const { user } = useAuth()
+  const [agency, setAgency] = useState(null)
+
+  useEffect(()=>{
+    if (!user) return
+    (async ()=>{
+      try {
+        // try to fetch agency via Supabase (direct client) — for MVP this is simplest
+        const { data, error } = await supabase
+          .from('agencies')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle()
+        if (error) {
+          console.warn('fetch agency error', error)
+          return
+        }
+        setAgency(data)
+      } catch (err) {
+        console.error(err)
+      }
+    })()
+  }, [user])
+
+  const stats = agency ? { rp: agency.rp, si: agency.si, ipi: agency.ipi, slr: agency.slr, ap: agency.ap, budget: agency.budget } : { rp: 0, si: 70, ipi: 60, slr: '0%', ap: 25, budget: 50 }
 
   return (
     <div>
       <h2>Dashboard</h2>
+      {user ? <p>Logged in as: {user.email}</p> : <p>Not logged in</p>}
+
       <div style={{ display: 'flex', gap: 12 }}>
         <StatsCard label="RP" value={stats.rp} />
         <StatsCard label="SI" value={stats.si} />

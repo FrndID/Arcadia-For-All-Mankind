@@ -1,4 +1,3 @@
-// frontend/package.json
 {
   "name": "afm-frontend",
   "version": "0.1.0",
@@ -11,7 +10,8 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.11.2"
+    "react-router-dom": "^6.11.2",
+    "@supabase/supabase-js": "^2.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",

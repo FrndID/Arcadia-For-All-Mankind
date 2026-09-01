@@ -1,13 +1,24 @@
-// frontend/src/pages/Register.jsx
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 
 export default function Register() {
-  const [agency, setAgency] = useState('')
-  const [country, setCountry] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [agencyName, setAgencyName] = useState('')
+  const { signUp } = useAuth()
+  const navigate = useNavigate()
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
-    alert('MVP: Register via Supabase Auth in your Supabase project.')
+    try {
+      const { data } = await signUp(email, password)
+      // Note: creating agency row requires backend/service role key. You can create via Supabase SQL or later endpoint.
+      alert('Registration complete. Please check your email to confirm (if enabled).')
+      navigate('/')
+    } catch (err) {
+      alert('Register failed: ' + (err.message || JSON.stringify(err)))
+    }
   }
 
   return (
@@ -15,14 +26,18 @@ export default function Register() {
       <h2>Register Agency</h2>
       <form onSubmit={onSubmit}>
         <div>
-          <label>Agency Name</label>
-          <input value={agency} onChange={e=>setAgency(e.target.value)} />
+          <label>Email</label>
+          <input value={email} onChange={e=>setEmail(e.target.value)} />
         </div>
         <div>
-          <label>Country</label>
-          <input value={country} onChange={e=>setCountry(e.target.value)} />
+          <label>Password</label>
+          <input type="password" value={password} onChange={e=>setPassword(e.target.value)} />
         </div>
-        <button type="submit">Register (Supabase)</button>
+        <div>
+          <label>Agency Name (optional)</label>
+          <input value={agencyName} onChange={e=>setAgencyName(e.target.value)} />
+        </div>
+        <button type="submit">Register</button>
       </form>
     </div>
   )
