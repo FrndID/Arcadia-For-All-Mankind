@@ -1,37 +1,77 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import useAuth from '../hooks/useAuth'
+import '../styles/Auth.css'
 
-export default function Login() {
+function Login({ onLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { signIn } = useAuth()
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const onSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
+    setError('')
+    setLoading(true)
+
     try {
-      await signIn(email, password)
-      navigate('/')
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Login failed')
+      }
+
+      const data = await response.json()
+      localStorage.setItem('afm_user', JSON.stringify(data.user))
+      localStorage.setItem('afm_session', JSON.stringify(data.session))
+      onLogin(data.user)
+      navigate('/dashboard')
     } catch (err) {
-      alert('Login failed: ' + (err.message || err.error_description || JSON.stringify(err)))
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div style={{ maxWidth: 480 }}>
-      <h2>Login</h2>
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>Email</label>
-          <input value={email} onChange={e=>setEmail(e.target.value)} />
-        </div>
-        <div>
-          <label>Password</label>
-          <input type="password" value={password} onChange={e=>setPassword(e.target.value)} />
-        </div>
-        <button type="submit">Login</button>
-      </form>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1>🚀 AFM — LOGIN</h1>
+        <form onSubmit={handleLogin}>
+          {error && <div className="error-message">{error}</div>}
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+        <p>
+          Don't have an account? <a href="/register">Register here</a>
+        </p>
+      </div>
     </div>
   )
 }
+
+export default Login

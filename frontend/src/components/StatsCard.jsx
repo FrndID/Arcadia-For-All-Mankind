@@ -1,10 +1,24 @@
-// frontend/src/components/StatsCard.jsx
-import React from 'react'
-export default function StatsCard({ label, value }){
+function StatsCard({ label, value, max, icon }) {
+  const percentage = max ? (value / max) * 100 : 0
+  const status = value >= 70 ? 'good' : value >= 40 ? 'normal' : 'critical'
+
   return (
-    <div style={{ padding: 12, border: '1px solid #ddd', borderRadius: 6, minWidth: 100 }}>
-      <div style={{ fontSize: 12, color: '#666' }}>{label}</div>
-      <div style={{ fontSize: 20 }}>{value}</div>
+    <div className={`stats-card stats-${status}`}>
+      <div className="stats-icon">{icon}</div>
+      <div className="stats-body">
+        <label>{label}</label>
+        <div className="stats-value">
+          {value}
+          {max && `/${max}`}
+        </div>
+        {max && (
+          <div className="stats-bar">
+            <div className="stats-fill" style={{ width: `${percentage}%` }}></div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
+
+export default StatsCard
