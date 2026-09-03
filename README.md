@@ -13,7 +13,7 @@ This is a complete, production-ready MVP implementation of AFM with:
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
@@ -49,45 +49,11 @@ Frontend runs on `http://localhost:5173`
 1. Create a Supabase project at https://supabase.com
 2. Go to SQL Editor
 3. Copy and run the contents of `supabase/schema.sql`
-4. Seed initial technologies (see below)
+4. Seed initial technologies (see DEPLOYMENT.md)
 
 ---
 
-## Database Schema
-
-The database includes:
-- `agencies` — Player space agencies
-- `technologies` — Research technologies
-- `vehicles` — Produced launch vehicles
-- `missions` — Launched missions with results
-- `logs` — Activity log for each agency
-- `npcs` — Non-player agencies
-
----
-
-## Seeding Initial Data
-
-After running `schema.sql`, seed technologies:
-
-```sql
-INSERT INTO technologies (name, era, research_cost_ap, research_cost_budget, duration_days, prerequisite) VALUES
-('Liquid Propulsion', '1969-1975', 10, 20, 14, '{}'),
-('Guidance System', '1969-1975', 12, 25, 21, '{"Liquid Propulsion"}'),
-('Orbital Rocket', '1969-1975', 15, 40, 30, '{"Liquid Propulsion", "Guidance System"}'),
-('Satellite', '1969-1975', 8, 15, 14, '{"Orbital Rocket"}'),
-('Crew Capsule', '1969-1975', 20, 50, 45, '{"Orbital Rocket"}'),
-('Lunar Orbit', '1975-1985', 25, 60, 60, '{"Crew Capsule", "Guidance System"}'),
-('Lunar Landing', '1975-1985', 35, 80, 90, '{"Lunar Orbit"}');
-
-INSERT INTO npcs (name, archetype, ap, budget, rp, si, ipi, slr, strategy) VALUES
-('NPC-Alpha', 'Lunar First', 25, 50, 0, 70, 60, 0, '{"priority": ["orbital", "lunar"]}'::jsonb),
-('NPC-Beta', 'Safe & Steady', 25, 50, 0, 70, 60, 0, '{"priority": ["satellite", "probe"]}'::jsonb),
-('NPC-Gamma', 'Space Pioneer', 25, 50, 0, 70, 60, 0, '{"priority": ["manned", "lunar"]}'::jsonb);
-```
-
----
-
-## Architecture
+## 📊 Architecture
 
 ### Backend (Node.js/Express)
 
@@ -129,12 +95,47 @@ frontend/src/
 │   ├── Auth.css          # Auth pages
 │   └── Dashboard.css     # Dashboard styles
 └── utils/
-    └── api.js            # API client
+    ├── api.js            # API client
+    └── supabase.js       # Supabase client
 ```
 
 ---
 
-## API Endpoints
+## 🎮 Game Mechanics
+
+### Automated Game Master (AGM)
+
+The AGM is a **deterministic** simulation engine (no AI) that:
+- Validates commands
+- Calculates resource costs
+- Simulates missions using formula:
+  ```
+  finalScore = baseReliability + techBonus + crewBonus - difficulty + randomVariance
+  ```
+- Updates agency stats (RP, SI, IPI, SLR)
+- Logs all events
+
+### Resource Management
+
+- **AP (Action Points)**: 25 per claim, max 50
+- **Budget**: Varies by agency, decreases with actions
+- **RP (Ranking Points)**: Increases with mission success
+- **SI (Stability Index)**: Affected by success/failure (0-100)
+- **IPI (Internal Political Indicator)**: Public support (0-100)
+- **SLR (Successful Launch Rate)**: % of successful launches
+
+### Mission Outcomes
+
+| Score | Result | RP | IPI | SI |
+|-------|--------|----|----|----|
+| 80+ | Complete Success | +10 | +5 | +5 |
+| 50-79 | Partial Success | +5 | +2 | +2 |
+| 30-49 | Failure | 0 | -10 | -5 |
+| 0-29 | Catastrophic | 0 | -20 | -15 |
+
+---
+
+## 🔌 API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` — Register new agency
@@ -143,7 +144,7 @@ frontend/src/
 ### Agency
 - `GET /api/agency/:userId` — Get agency data
 - `GET /api/agency` — Get all agencies (ranking)
-- `POST /api/agency/:agencyId/update-stats` — Update stats (internal)
+- `POST /api/agency/:agencyId/update-stats` — Update stats
 
 ### Research
 - `POST /api/research/start` — Start research
@@ -161,48 +162,55 @@ frontend/src/
 
 ---
 
-## Game Mechanics
+## ✅ Features Implemented (MVP)
 
-### Automated Game Master (AGM)
-
-The AGM is a **deterministic** simulation engine (no AI) that:
-- Validates commands
-- Calculates resource costs
-- Simulates missions using formula:
-  ```
-  finalScore = baseReliability + techBonus + crewBonus - difficulty + randomVariance
-  ```
-- Updates agency stats (RP, SI, IPI, SLR)
-- Logs all events
-
-### Mission Simulation
-
-Missions succeed or fail based on:
-- Vehicle reliability (0-100)
-- Technology research level (RP bonus)
-- Mission difficulty
-- Random variance (-5 to +5)
-
-**Outcome Table:**
-| Score | Result | RP | IPI | SI |
-|-------|--------|----|----|----|
-| 80+ | Complete Success | +10 | +5 | +5 |
-| 50-79 | Partial Success | +5 | +2 | +2 |
-| 30-49 | Failure | 0 | -10 | -5 |
-| 0-29 | Catastrophic | 0 | -20 | -15 |
-
-### Resource Management
-
-- **AP (Action Points)**: 25 per claim, max 50
-- **Budget**: Varies by agency, decreases with actions
-- **RP (Ranking Points)**: Increases with mission success
-- **SI (Stability Index)**: Affected by success/failure
-- **IPI (Internal Political Indicator)**: Public support
-- **SLR (Successful Launch Rate)**: % of successful launches
+✅ Agency registration & authentication  
+✅ Dashboard with stats (RP, SI, IPI, SLR)  
+✅ Resource management (AP, Budget)  
+✅ Research command system  
+✅ Vehicle production  
+✅ Mission launching & simulation  
+✅ Activity logging  
+✅ Global ranking leaderboard  
+✅ NPC autopilot (autonomous agencies)  
+✅ Deterministic mission outcomes  
+✅ Technology tree  
+✅ Zero AI token usage  
 
 ---
 
-## Environment Variables
+## 💰 Costs
+
+| Component | Free Tier | Cost |
+|-----------|-----------|------|
+| Frontend Hosting (Vercel) | ✅ Unlimited | $0 |
+| Backend Hosting (Railway) | ✅ 5GB/month | $0 |
+| Database (Supabase) | ✅ 500MB | $0 |
+| Cron Jobs (Vercel) | ✅ 2 free | $0 |
+| AI Usage | ❌ Not used | $0 |
+| **Total** | | **$0/month** |
+
+---
+
+## 🚢 Deployment
+
+See **DEPLOYMENT.md** for detailed instructions on deploying to:
+- Vercel (Frontend)
+- Railway (Backend)
+- Supabase (Database)
+
+---
+
+## 🗺️ Future Roadmap
+
+See **ROADMAP.md** for planned features and enhancements:
+- Phase 2: Advanced Features (2-3 weeks)
+- Phase 3: Narrative & UI (2-3 weeks)
+- Phase 4: Full Game (4-6 weeks)
+
+---
+
+## 📝 Environment Variables
 
 ### Backend (.env)
 
@@ -222,87 +230,23 @@ VITE_API_URL=http://localhost:8787
 
 ---
 
-## Deployment
+## 🛠️ Development
 
-### Frontend (Vercel)
-
-```bash
-cd frontend
-vercel deploy
-```
-
-### Backend (Railway/Render)
+### Running Locally
 
 ```bash
+# Terminal 1: Backend
 cd backend
-# Railway: railway deploy
-# Render: render deploy
+npm install
+npm run dev
+
+# Terminal 2: Frontend
+cd frontend
+npm install
+npm run dev
 ```
 
-### Database (Supabase)
-
-No deployment needed—Supabase is managed.
-
----
-
-## Costs
-
-| Component | Free Tier | Cost |
-|-----------|-----------|------|
-| Frontend Hosting (Vercel) | ✅ Unlimited | $0 |
-| Backend Hosting (Railway) | ✅ 5GB/month | $0 |
-| Database (Supabase) | ✅ 500MB | $0 |
-| Cron Jobs (Vercel) | ✅ 2 free | $0 |
-| AI Usage | ❌ Not used | $0 |
-| **Total** | | **$0/month** |
-
----
-
-## Features Implemented (MVP)
-
-✅ Agency registration & authentication  
-✅ Dashboard with stats (RP, SI, IPI, SLR)  
-✅ Resource management (AP, Budget)  
-✅ Research command system  
-✅ Vehicle production  
-✅ Mission launching & simulation  
-✅ Activity logging  
-✅ Global ranking leaderboard  
-✅ NPC autopilot (autonomous agencies)  
-✅ Deterministic mission outcomes  
-✅ Technology tree  
-✅ Zero AI token usage  
-
----
-
-## Future Enhancements
-
-- [ ] Cron job for AP distribution (every 4 hours)
-- [ ] NPC automation scheduler
-- [ ] World events system
-- [ ] Cooperation & diplomacy
-- [ ] Advanced technology tree
-- [ ] Narrative templates (instead of AI)
-- [ ] Admin dashboard
-- [ ] Discord bot integration
-
----
-
-## Development Notes
-
-### Why No AI?
-
-The MVP uses **deterministic formulas** instead of AI to:
-- Eliminate AI token costs
-- Ensure predictable, fair gameplay
-- Simplify debugging
-- Reduce infrastructure complexity
-- Keep hosting at $0/month
-
-If narrative generation is needed later, use:
-- Static templates with placeholder substitution
-- Local LLM (Ollama) on the server
-- HuggingFace Inference API (free tier)
+Open http://localhost:5173 in your browser.
 
 ### Testing
 
@@ -316,20 +260,43 @@ cd frontend
 npm run test
 ```
 
-### Debugging
+---
 
-Backend logs to console. Frontend logs to browser console.
-Check Supabase dashboard for database queries.
+## 📚 Documentation
+
+- **README.md** — This file
+- **DEPLOYMENT.md** — Deployment instructions
+- **ROADMAP.md** — Future enhancements
+- **supabase/README.md** — Database setup
 
 ---
 
-## Support & Contributions
+## 🎯 Why No AI?
 
-For issues or improvements, create an issue or PR.
+The MVP uses **deterministic formulas** instead of AI to:
+- ✅ Eliminate AI token costs
+- ✅ Ensure predictable, fair gameplay
+- ✅ Simplify debugging
+- ✅ Reduce infrastructure complexity
+- ✅ Keep hosting at $0/month
+
+If narrative generation is needed later, use:
+- Static templates with placeholder substitution
+- Local LLM (Ollama) on the server
+- HuggingFace Inference API (free tier)
 
 ---
 
-## License
+## 📞 Support
+
+For issues or questions:
+1. Check README.md and DEPLOYMENT.md
+2. Check GitHub Issues
+3. Create a new Issue with details
+
+---
+
+## 📄 License
 
 MIT
 

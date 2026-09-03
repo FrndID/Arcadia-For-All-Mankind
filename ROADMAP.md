@@ -1,4 +1,4 @@
-# AFM Development Roadmap
+# AFM — Development Roadmap
 
 ## ✅ MVP Complete (Current Branch: mvp-complete)
 
@@ -110,7 +110,7 @@
 
 ---
 
-## 📝 Future Nice-to-Haves
+## 🎁 Future Nice-to-Haves
 
 - [ ] WebSocket for real-time updates
 - [ ] Mobile app (React Native)
@@ -123,7 +123,7 @@
 
 ---
 
-## 🔧 Technical Debt
+## 🛠️ Technical Debt
 
 - [ ] Add input validation
 - [ ] Add error handling
@@ -159,6 +159,6 @@ To work on the next phase:
 
 ---
 
-## Questions?
+## 📞 Questions?
 
 Check README.md or DEPLOYMENT.md for details.
