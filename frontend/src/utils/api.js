@@ -1,16 +1,38 @@
-// frontend/src/utils/api.js
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8787/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787'
 
-export async function post(path, body){
-  const res = await fetch(API_BASE + path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  })
-  return res.json()
-}
+export const api = {
+  async request(endpoint, options = {}) {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    })
 
-export async function get(path){
-  const res = await fetch(API_BASE + path)
-  return res.json()
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || 'Request failed')
+    }
+
+    return response.json()
+  },
+
+  async get(endpoint) {
+    return this.request(endpoint, { method: 'GET' })
+  },
+
+  async post(endpoint, body) {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+  },
+
+  async put(endpoint, body) {
+    return this.request(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(body)
+    })
+  }
 }
