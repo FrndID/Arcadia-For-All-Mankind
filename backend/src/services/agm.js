@@ -1,5 +1,5 @@
 /**
- * AGM — Automated Game Master Engine
+ * AGM – Automated Game Master Engine
  * Deterministic simulation without AI
  */
 
