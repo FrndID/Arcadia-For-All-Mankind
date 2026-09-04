@@ -20,6 +20,7 @@ module.exports = (supabase) => {
       });
 
       if (authError) {
+        console.error('Auth error:', authError);
         return res.status(400).json({ error: authError.message });
       }
 
@@ -47,7 +48,8 @@ module.exports = (supabase) => {
         .select();
 
       if (agencyError) {
-        return res.status(400).json({ error: agencyError.message });
+        console.error('Agency insert error:', agencyError);
+        return res.status(400).json({ error: agencyError.message, details: agencyError });
       }
 
       res.status(201).json({
@@ -56,6 +58,7 @@ module.exports = (supabase) => {
         user: authData.user
       });
     } catch (error) {
+      console.error('Register error:', error);
       res.status(500).json({ error: error.message });
     }
   });
@@ -75,6 +78,7 @@ module.exports = (supabase) => {
       });
 
       if (error) {
+        console.error('Login error:', error);
         return res.status(401).json({ error: error.message });
       }
 
@@ -84,6 +88,7 @@ module.exports = (supabase) => {
         user: data.user
       });
     } catch (error) {
+      console.error('Login catch error:', error);
       res.status(500).json({ error: error.message });
     }
   });
