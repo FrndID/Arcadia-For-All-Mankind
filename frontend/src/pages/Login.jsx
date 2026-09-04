@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import '../styles/Auth.css'
+import { useNavigate, Link } from 'react-router-dom'
+import './Auth.css'
 
-function Login({ onLogin }) {
+export default function Login({ onLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -15,18 +15,18 @@ function Login({ onLogin }) {
     setLoading(true)
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || 'Login failed')
       }
 
-      const data = await response.json()
       localStorage.setItem('afm_user', JSON.stringify(data.user))
       localStorage.setItem('afm_session', JSON.stringify(data.session))
       onLogin(data.user)
@@ -40,38 +40,46 @@ function Login({ onLogin }) {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <h1>🚀 AFM — LOGIN</h1>
-        <form onSubmit={handleLogin}>
-          {error && <div className="error-message">{error}</div>}
+      <div className="auth-box">
+        <h1>🚀 Arcadia For All Mankind</h1>
+        <h2>Login to Your Agency</h2>
+
+        {error && <div className="error">{error}</div>}
+
+        <form onSubmit={handleLogin} className="auth-form">
           <div className="form-group">
-            <label>Email</label>
+            <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
               required
             />
           </div>
+
           <div className="form-group">
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
               required
             />
           </div>
-          <button type="submit" disabled={loading}>
+
+          <button type="submit" className="btn-primary" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        <p>
-          Don't have an account? <a href="/register">Register here</a>
+
+        <p className="auth-footer">
+          Don't have an account? <Link to="/register">Register here</Link>
         </p>
       </div>
     </div>
   )
 }
-
-export default Login

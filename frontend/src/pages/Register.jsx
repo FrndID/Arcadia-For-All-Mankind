@@ -1,47 +1,61 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import '../styles/Auth.css'
+import { useNavigate, Link } from 'react-router-dom'
+import './Auth.css'
 
-function Register({ onRegister }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [agencyName, setAgencyName] = useState('')
-  const [country, setCountry] = useState('')
-  const [culture, setCulture] = useState('')
-  const [history, setHistory] = useState('')
-  const [targets, setTargets] = useState('')
+export default function Register({ onRegister }) {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    agencyName: '',
+    country: '',
+    culture: '',
+    history: '',
+    targets: ''
+  })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
   const handleRegister = async (e) => {
     e.preventDefault()
     setError('')
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
     setLoading(true)
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email,
-          password,
-          agencyName,
-          country,
-          culture,
-          history,
-          targets: targets.split(',').map((t) => t.trim()).filter(Boolean)
+          email: formData.email,
+          password: formData.password,
+          agencyName: formData.agencyName,
+          country: formData.country,
+          culture: formData.culture,
+          history: formData.history,
+          targets: formData.targets
         })
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || 'Registration failed')
       }
 
-      const data = await response.json()
       localStorage.setItem('afm_user', JSON.stringify(data.user))
-      localStorage.setItem('afm_session', JSON.stringify(data.session))
+      localStorage.setItem('afm_agency', JSON.stringify(data.agency))
       onRegister(data.user)
       navigate('/dashboard')
     } catch (err) {
@@ -53,80 +67,125 @@ function Register({ onRegister }) {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <h1>🚀 AFM — REGISTER AGENCY</h1>
-        <form onSubmit={handleRegister}>
-          {error && <div className="error-message">{error}</div>}
+      <div className="auth-box auth-box-register">
+        <h1>🚀 Arcadia For All Mankind</h1>
+        <h2>Create Your Space Agency</h2>
+
+        {error && <div className="error">{error}</div>}
+
+        <form onSubmit={handleRegister} className="auth-form">
           <div className="form-group">
-            <label>Email</label>
+            <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="your@email.com"
               required
             />
           </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+
           <div className="form-group">
-            <label>Password</label>
+            <label htmlFor="agencyName">Agency Name</label>
             <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              id="agencyName"
+              type="text"
+              name="agencyName"
+              value={formData.agencyName}
+              onChange={handleChange}
+              placeholder="e.g., Soviet Space Program"
               required
             />
           </div>
-          <div className="form-group">
-            <label>Agency Name</label>
-            <input
-              type="text"
-              value={agencyName}
-              onChange={(e) => setAgencyName(e.target.value)}
-              required
-            />
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="country">Country</label>
+              <input
+                id="country"
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+                placeholder="e.g., Soviet Union"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="culture">Culture</label>
+              <input
+                id="culture"
+                type="text"
+                name="culture"
+                value={formData.culture}
+                onChange={handleChange}
+                placeholder="e.g., Communist"
+              />
+            </div>
           </div>
+
           <div className="form-group">
-            <label>Supporting Country</label>
-            <input
-              type="text"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label>Culture/Identity</label>
-            <input
-              type="text"
-              value={culture}
-              onChange={(e) => setCulture(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label>History (max 3 paragraphs)</label>
+            <label htmlFor="history">History/Background</label>
             <textarea
-              value={history}
-              onChange={(e) => setHistory(e.target.value)}
+              id="history"
+              name="history"
+              value={formData.history}
+              onChange={handleChange}
+              placeholder="Tell us about your agency..."
               rows="3"
             />
           </div>
+
           <div className="form-group">
-            <label>Initial Targets (comma separated)</label>
-            <input
-              type="text"
-              value={targets}
-              onChange={(e) => setTargets(e.target.value)}
-              placeholder="e.g., First Orbital Flight, Lunar Probe"
+            <label htmlFor="targets">Mission Targets</label>
+            <textarea
+              id="targets"
+              name="targets"
+              value={formData.targets}
+              onChange={handleChange}
+              placeholder="What are your goals? (Moon landing, Mars mission, etc.)"
+              rows="3"
             />
           </div>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Registering...' : 'Register Agency'}
+
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Creating Agency...' : 'Create Agency'}
           </button>
         </form>
-        <p>
-          Already have an account? <a href="/login">Login here</a>
+
+        <p className="auth-footer">
+          Already have an account? <Link to="/login">Login here</Link>
         </p>
       </div>
     </div>
   )
 }
-
-export default Register
