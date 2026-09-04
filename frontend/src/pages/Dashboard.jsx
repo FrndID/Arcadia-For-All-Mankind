@@ -60,7 +60,7 @@ export default function Dashboard({ user }) {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>🎯 {agency.name}</h1>
+          <h1>{agency.name}</h1>
           <p className="country-badge">{agency.country}</p>
         </div>
         <button className="btn-logout" onClick={handleLogout}>Logout</button>
@@ -154,10 +154,10 @@ export default function Dashboard({ user }) {
           <section className="card quick-actions">
             <h2>Quick Actions</h2>
             <div className="button-group">
-              <button className="btn-action">🔬 Research Tech</button>
-              <button className="btn-action">🏭 Produce Equipment</button>
-              <button className="btn-action">🚀 Launch Mission</button>
-              <button className="btn-action">📊 View Rankings</button>
+              <button className="btn-action">Research Tech</button>
+              <button className="btn-action">Produce Equipment</button>
+              <button className="btn-action">Launch Mission</button>
+              <button className="btn-action">View Rankings</button>
             </div>
           </section>
         </div>
